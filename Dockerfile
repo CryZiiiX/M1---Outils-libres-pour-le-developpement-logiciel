@@ -1,29 +1,26 @@
-# Image de base officielle avec GCC
-FROM gcc:12-bookworm
+# ============================================================================
+# Dockerfile - Prédiction du Risque de Crédit Bancaire (Python)
+# ============================================================================
+# Image Docker pour la reproductibilité du projet Python.
+# ============================================================================
 
-# Éviter les prompts interactifs lors de l'installation
-ENV DEBIAN_FRONTEND=noninteractive
+FROM python:3.11-slim
 
-# Installer Python 3, pip et outils de build
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    make \
+# Installer make pour exécuter le Makefile
+RUN apt-get update && apt-get install -y --no-install-recommends make \
     && rm -rf /var/lib/apt/lists/*
 
-# Définir le répertoire de travail
+# Répertoire de travail
 WORKDIR /app
 
-# Copier requirements.txt et installer les dépendances Python
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
+# Copier requirements.txt en premier pour optimiser le cache Docker
+COPY back-end/requirements.txt .
 
-# Copier tout le projet dans le container
+# Installer les dépendances Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copier tout le projet
 COPY . .
 
-# Compiler le projet C
-RUN make clean && make
-
-# Commande par défaut : exécuter le programme C
-CMD ["./build/credit_risk_predictor"]
-
+# Commande par défaut : exécuter le pipeline Python complet
+CMD ["make", "all"]

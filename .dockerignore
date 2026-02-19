@@ -1,22 +1,45 @@
-# Ignorer les fichiers de build locaux
-build/
-*.o
-*.bin
+# ============================================================================
+# .dockerignore - Fichiers à exclure du contexte Docker
+# ============================================================================
 
-# Ignorer les résultats locaux
-results/
-models/*.bin
+# Résultats générés (régénérés lors de l'exécution)
+back-end/results/
+*.log
 
-# Ignorer les environnements virtuels Python
+# Environnements virtuels Python
 venv/
+env/
+.venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
 
-# Ignorer les fichiers de configuration IDE
+# Fichiers de configuration IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Ignorer Git
+# Fichiers Git
 .git/
 .gitignore
+.gitattributes
 
+# Fichiers temporaires
+*.tmp
+*.temp
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node
+front-end/node_modules/
+front-end/dist/
+
+# Fichiers système
+.DS_Store
+Thumbs.db

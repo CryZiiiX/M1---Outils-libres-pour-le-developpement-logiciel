@@ -9,14 +9,24 @@
 # data/processed/*.txt
 # data/stats/*.txt
 
-# Python cache
+# Python
+.env
+.env.*
+!.env.example
+.venv/
+venv/
 __pycache__/
 *.pyc
 *.pyo
 
+# Node
+front-end/node_modules/
+front-end/dist/
+
 # IDE
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 

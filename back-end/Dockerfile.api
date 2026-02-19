@@ -1,0 +1,15 @@
+# Image API Flask : Gunicorn sur app.main:app
+# Prérequis : back-end/models/*.joblib doivent exister (exécuter make train avant build)
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY app/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app/ ./app/
+# models/ copié au build : requis pour predict. Sans eux, l'API démarre mais prédit échoue.
+COPY models/ ./models/
+
+EXPOSE 8000
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app.main:app"]

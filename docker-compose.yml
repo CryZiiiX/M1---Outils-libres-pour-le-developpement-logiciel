@@ -1,0 +1,36 @@
+# db -> api -> web (dépendances). DATABASE_URL et VITE_API_URL injectés.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: credit_risk
+      POSTGRES_USER: credit
+      POSTGRES_PASSWORD: credit123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://credit:credit123@db:5432/credit_risk
+    depends_on:
+      - db
+
+  web:
+    build: ./front-end
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8000
+    depends_on:
+      - api
+
+
+volumes:
+  pgdata:

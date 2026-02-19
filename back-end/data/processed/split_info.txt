@@ -1,0 +1,24 @@
+============================================================
+INFORMATIONS SUR LE SPLIT
+============================================================
+
+Fichier d'origine: /home/maxiiimax/Bureau/FAC/M1/SEMESTRE-1/Outils libres pour le développement logiciel/PROJET/PROGRAMME/back-end/data/raw/credit_risk_dataset.csv
+Date de création: 2026-02-14 17:35:39.483517
+Random state: 42
+Test size: 0.2
+
+Nombre total d'échantillons: 32581
+Train set: 26064 (80.00%)
+Test set: 6517 (20.00%)
+
+Distribution des classes (dataset complet):
+  Classe 0: 25473 (78.18%)
+  Classe 1: 7108 (21.82%)
+
+Distribution des classes (train set):
+  Classe 0: 20378 (78.18%)
+  Classe 1: 5686 (21.82%)
+
+Distribution des classes (test set):
+  Classe 0: 5095 (78.18%)
+  Classe 1: 1422 (21.82%)
