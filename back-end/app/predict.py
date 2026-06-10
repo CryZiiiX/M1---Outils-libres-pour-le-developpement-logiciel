@@ -4,7 +4,7 @@ Charge au démarrage les modèles joblib (LR, scaler, DT) et expose predict_lr
 et predict_dt. Les seuils de classification sont définis dans _classify.
 
 Invariant : FEATURE_ORDER (preprocess) doit correspondre à l'ordre des
-colonnes utilisées à l'entraînement (compare_with_sklearn._preprocess_dataframe).
+colonnes utilisées à l'entraînement (compare_with_sklearn._encode_dataframe).
 """
 import joblib
 import pandas as pd
@@ -12,9 +12,20 @@ import pandas as pd
 from .config import LR_MODEL_PATH, SCALER_PATH, DT_MODEL_PATH
 from .preprocess import encode_input, FEATURE_ORDER
 
-lr_model = joblib.load(LR_MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
-dt_model = joblib.load(DT_MODEL_PATH)
+try:
+    lr_model = joblib.load(LR_MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+    dt_model = joblib.load(DT_MODEL_PATH)
+except FileNotFoundError as exc:
+    # Message explicite plutôt qu'une stack trace confuse au démarrage :
+    # les modèles doivent être entraînés avant de lancer l'API.
+    raise RuntimeError(
+        "Modèles introuvables dans back-end/models/ "
+        f"(fichier manquant : {exc.filename}). "
+        "Lancez d'abord « make train » à la racine du projet "
+        "(ou « make docker-up » qui enchaîne entraînement et déploiement), "
+        "puis redémarrez l'API."
+    ) from exc
 
 
 def _classify(probability: float) -> tuple[str, str]:

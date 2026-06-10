@@ -1,4 +1,6 @@
 # db -> api -> web (dépendances). DATABASE_URL et VITE_API_URL injectés.
+# Les healthchecks garantissent l'ordre de démarrage réel : l'API attend que
+# PostgreSQL accepte les connexions, le front attend que /health réponde.
 services:
   db:
     image: postgres:16-alpine
@@ -10,6 +12,11 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U credit -d credit_risk"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
     build:
@@ -20,7 +27,15 @@ services:
     environment:
       DATABASE_URL: postgresql://credit:credit123@db:5432/credit_risk
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      # python est présent dans l'image (pas de curl/wget dans slim)
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   web:
     build: ./front-end
@@ -29,7 +44,8 @@ services:
     environment:
       VITE_API_URL: http://localhost:8000
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
 
 volumes:

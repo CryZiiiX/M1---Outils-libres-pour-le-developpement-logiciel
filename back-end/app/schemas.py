@@ -19,6 +19,10 @@ class PredictionInputSchema(Schema):
     """Valide le payload POST /predict.
 
     Contraintes : âge 18-100, revenu 0-10M, loan_int_rate 0-30, etc.
+    loan_amnt est borné à 100 000 (le dataset plafonne à 35 000 : au-delà,
+    la demande sort du domaine d'entraînement des modèles ; la borne évite
+    aussi un dépassement de la colonne Integer en base). loan_percent_income
+    est borné à 1 (un prêt supérieur au revenu annuel est hors domaine).
     model_choice optionnel (lr|dt|both, défaut both). Clés catégorielles
     limitées aux valeurs définies (HOME_OWNERSHIP_VALUES, etc.).
     """
@@ -28,9 +32,9 @@ class PredictionInputSchema(Schema):
     person_emp_length = fields.Float(required=True, validate=validate.Range(min=0, max=100))
     loan_intent = fields.Str(required=True, validate=validate.OneOf(LOAN_INTENT_VALUES))
     loan_grade = fields.Str(required=True, validate=validate.OneOf(LOAN_GRADE_VALUES))
-    loan_amnt = fields.Integer(required=True, validate=validate.Range(min=0))
+    loan_amnt = fields.Integer(required=True, validate=validate.Range(min=0, max=100_000))
     loan_int_rate = fields.Float(required=True, validate=validate.Range(min=0, max=30))
-    loan_percent_income = fields.Float(required=True, validate=validate.Range(min=0))
+    loan_percent_income = fields.Float(required=True, validate=validate.Range(min=0, max=1))
     cb_person_default_on_file = fields.Str(required=True, validate=validate.OneOf(DEFAULT_ON_FILE_VALUES))
     cb_person_cred_hist_length = fields.Integer(required=True, validate=validate.Range(min=0, max=50))
     model_choice = fields.Str(load_default="both", validate=validate.OneOf(MODEL_CHOICE_VALUES))

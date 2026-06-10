@@ -7,13 +7,24 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
  * @param {string} path - Chemin de l'endpoint (ex: /predict, /predictions).
  * @param {RequestInit} [options={}] - Options fetch (method, body, etc.).
  * @returns {Promise<Object>} Réponse JSON.
- * @throws {Error} Si res.ok est false, avec message body.detail ou "Erreur {status}".
+ * @throws {Error} Si res.ok est false (message body.detail ou "Erreur {status}"),
+ *   ou si l'API est injoignable (message explicite en français au lieu du
+ *   "Failed to fetch" brut du navigateur).
  */
 async function request(path, options = {}) {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  })
+  let res
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    })
+  } catch {
+    // Erreur réseau (API éteinte, mauvaise URL, CORS...) : fetch rejette
+    // avec un TypeError peu parlant pour l'utilisateur final.
+    throw new Error(
+      "Impossible de contacter l'API. Vérifiez que le service back-end est démarré (make docker-up ou docker compose up).",
+    )
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
     throw new Error(body.detail || `Erreur ${res.status}`)
