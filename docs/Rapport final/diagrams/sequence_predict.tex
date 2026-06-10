@@ -1,0 +1,70 @@
+% ============================================================================
+% Diagramme de séquence POST /predict (TikZ)
+% Usage : \input{diagrams/sequence_predict.tex}
+% Styles partagés : voir rapport.tex
+% ============================================================================
+\begin{tikzpicture}[schema,
+    actor/.style={draw=schemaBlue, semithick, rounded corners=2pt,
+                  fill=schemaBlueBg, minimum width=2.2cm, minimum height=0.85cm,
+                  align=center, font=\footnotesize},
+    msg/.style={->, semithick, draw=black!80},
+    retmsg/.style={->, semithick, draw=black!55, dashed},
+    msglabel/.style={font=\scriptsize, fill=white, inner sep=1.5pt, above=-1pt, midway},
+    phase/.style={font=\scriptsize\itshape, text=black!55, fill=white, inner sep=1.5pt},
+]
+
+% ─── Acteurs ────────────────────────────────────────────────────────────
+\node[actor, fill=white, draw=black!60] (client) at (0,0)    {Client\\[-2pt]{\scriptsize Vue 3}};
+\node[actor] (flask)   at (2.7,0)  {API Flask\\[-2pt]{\scriptsize\texttt{routes.py}}};
+\node[actor] (valid)   at (5.4,0)  {Validation\\[-2pt]{\scriptsize Marshmallow}};
+\node[actor] (preproc) at (8.1,0)  {Encodage\\[-2pt]{\scriptsize\texttt{preprocess.py}}};
+\node[actor] (predict) at (10.8,0) {Modèles\\[-2pt]{\scriptsize\texttt{predict.py}}};
+\node[actor] (db)      at (13.6,0) {BDD\\[-2pt]{\scriptsize SQLAlchemy}};
+
+% ─── Bandes de phases (arrière-plan) ────────────────────────────────────
+\begin{scope}[on background layer]
+    \fill[black!4, rounded corners=2pt] (-1.2,-1.45) rectangle (14.8,-2.85);  % validation
+    \fill[black!4, rounded corners=2pt] (-1.2,-3.00) rectangle (14.8,-4.40);  % encodage
+    \fill[black!4, rounded corners=2pt] (-1.2,-4.55) rectangle (14.8,-7.10);  % prédiction
+    \fill[black!4, rounded corners=2pt] (-1.2,-7.25) rectangle (14.8,-8.45);  % persistance
+    \fill[black!4, rounded corners=2pt] (-1.2,-8.60) rectangle (14.8,-9.75);  % réponse
+\end{scope}
+
+% ─── Lignes de vie ──────────────────────────────────────────────────────
+\foreach \n in {client,flask,valid,preproc,predict,db}{
+    \draw[black!30] (\n.south) -- (\n.south |- 0,-10);
+}
+
+% ─── Labels de phases ───────────────────────────────────────────────────
+\node[phase, anchor=west] at (-1.1,-1.72) {1. Validation};
+\node[phase, anchor=west] at (-1.1,-3.27) {2. Encodage};
+\node[phase, anchor=west] at (-1.1,-4.82) {3. Prédiction};
+\node[phase, anchor=west] at (-1.1,-7.52) {4. Persistance};
+\node[phase, anchor=west] at (-1.1,-8.87) {5. Réponse};
+
+% ─── Messages ───────────────────────────────────────────────────────────
+% Requête initiale
+\draw[msg] (0,-1.05) -- node[msglabel] {\texttt{POST /predict} (JSON)} (2.7,-1.05);
+
+% 1. Validation
+\draw[msg]    (2.7,-1.95) -- node[msglabel] {\texttt{schema.load()}} (5.4,-1.95);
+\draw[retmsg] (5.4,-2.55) -- node[msglabel] {données validées (sinon 400)} (2.7,-2.55);
+
+% 2. Encodage
+\draw[msg]    (2.7,-3.50) -- node[msglabel] {\texttt{encode\_input()}} (8.1,-3.50);
+\draw[retmsg] (8.1,-4.10) -- node[msglabel] {vecteur de 11 features} (2.7,-4.10);
+
+% 3. Prédiction (LR et/ou DT selon model_choice)
+\draw[msg]    (2.7,-5.10) -- node[msglabel] {\texttt{predict\_lr(x)}} (10.8,-5.10);
+\draw[retmsg] (10.8,-5.70) -- node[msglabel] {probabilité, niveau de risque, décision} (2.7,-5.70);
+\draw[msg]    (2.7,-6.25) -- node[msglabel] {\texttt{predict\_dt(x)}} (10.8,-6.25);
+\draw[retmsg] (10.8,-6.85) -- node[msglabel] {probabilité, niveau de risque, décision} (2.7,-6.85);
+
+% 4. Persistance
+\draw[msg]    (2.7,-7.75) -- node[msglabel] {\texttt{db.add()} + \texttt{commit()}} (13.6,-7.75);
+\draw[retmsg] (13.6,-8.30) -- node[msglabel] {identifiant de l'enregistrement} (2.7,-8.30);
+
+% 5. Réponse
+\draw[retmsg] (2.7,-9.45) -- node[msglabel] {\texttt{201 Created} \{id, lr, dt\}} (0,-9.45);
+
+\end{tikzpicture}

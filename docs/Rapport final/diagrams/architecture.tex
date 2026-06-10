@@ -1,0 +1,48 @@
+% ============================================================================
+% Diagramme d'architecture globale (TikZ)
+% Usage : \input{diagrams/architecture.tex}
+% Styles partagés (process, data, service, database, user...) : voir rapport.tex
+% ============================================================================
+\begin{tikzpicture}[schema, node distance=0.85cm and 0.7cm]
+
+% ─── Pipeline ML hors ligne ─────────────────────────────────────────────
+\node[data, minimum width=3.2cm]     (csv)    {Dataset CSV\\[-1pt]{\scriptsize\texttt{credit\_risk\_dataset.csv}}};
+\node[process, minimum width=3cm, right=of csv]   (split)  {Split 80/20\\[-1pt]{\scriptsize\texttt{split\_dataset.py}}};
+\node[process, minimum width=3cm, right=of split] (train)  {Entraînement\\[-1pt]{\scriptsize\texttt{compare\_with\_sklearn.py}}};
+\node[process, minimum width=3cm, right=of train] (plots)  {Graphiques\\[-1pt]{\scriptsize\texttt{plot\_results.py}}};
+
+\node[artefact, below=1.1cm of train] (models) {Modèles \texttt{.joblib}\\[-1pt]{\scriptsize LR + DT + Scaler}};
+
+\draw[arrow] (csv)   -- (split);
+\draw[arrow] (split) -- (train);
+\draw[arrow] (train) -- (plots);
+\draw[arrow] (train) -- node[flowlabel, right=1pt] {produit} (models);
+
+\begin{scope}[on background layer]
+    \node[groupbox, fit=(csv)(split)(train)(plots)(models)] (pipeline) {};
+\end{scope}
+\node[grouplabel, anchor=south west] at (pipeline.north west)
+    {Pipeline ML hors ligne  -  \texttt{make all}};
+
+% ─── Application web en ligne ───────────────────────────────────────────
+\node[service, below=2.6cm of models]  (api)   {API Flask\\[-1pt]{\scriptsize Gunicorn - port 8000}};
+\node[service, left=1.9cm of api]      (front) {Front-end Vue 3\\[-1pt]{\scriptsize Vite - port 5173}};
+\node[database, right=1.5cm of api]    (db)    {PostgreSQL\\[-1pt]{\scriptsize port 5432}};
+
+\draw[arrow, <->] (front) -- node[flowlabel, above=1pt] {JSON/REST} (api);
+\draw[arrow, <->] (api)   -- node[flowlabel, above] {SQL} (db);
+
+\begin{scope}[on background layer]
+    \node[groupbox, fit=(front)(api)(db)] (webapp) {};
+\end{scope}
+\node[grouplabel, anchor=south west] at (webapp.north west)
+    {Application web en ligne  -  \texttt{docker compose up}};
+
+% ─── Lien entre les deux parties ────────────────────────────────────────
+\draw[arrow, dashed] (models) -- node[flowlabel, right=2pt] {chargés au démarrage} (api);
+
+% ─── Utilisateur ────────────────────────────────────────────────────────
+\node[user, below=1.3cm of front] (user) {Utilisateur\\[-1pt]{\scriptsize navigateur}};
+\draw[arrow, <->] (user) -- node[flowlabel, right=2pt] {HTTP} (front);
+
+\end{tikzpicture}

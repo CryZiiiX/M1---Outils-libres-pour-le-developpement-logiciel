@@ -1,0 +1,53 @@
+% ============================================================================
+% Diagramme de flux du pipeline ML (TikZ)
+% Usage : \input{diagrams/pipeline_ml.tex}
+% Styles partagés (process, data, artefact...) : voir rapport.tex
+% ============================================================================
+\begin{tikzpicture}[schema, node distance=0.75cm]
+
+% ─── Données d'entrée ───────────────────────────────────────────────────
+\node[data, minimum width=6.6cm] (raw)
+    {\texttt{data/raw/credit\_risk\_dataset.csv}\\[-1pt]
+     {\scriptsize 32\,581 lignes, 12 colonnes}};
+
+% ─── Étape 1 : split ────────────────────────────────────────────────────
+\node[process, minimum width=6.6cm, below=of raw] (split)
+    {\texttt{split\_dataset.py}\\[-1pt]
+     {\scriptsize split stratifié 80/20, \texttt{random\_state=42}}};
+
+\node[data, minimum width=6.6cm, below=of split] (processed)
+    {\texttt{train.csv} (26\,064) \,+\, \texttt{test.csv} (6\,517)};
+
+% ─── Étape 2 : entraînement ─────────────────────────────────────────────
+\node[process, minimum width=6.6cm, below=of processed] (train)
+    {\texttt{compare\_with\_sklearn.py}\\[-1pt]
+     {\scriptsize régression logistique + arbre de décision, \texttt{StandardScaler} (LR)}};
+
+% Deux sorties côte à côte
+\node[artefact, minimum width=4.6cm, below left=0.85cm and -1.4cm of train] (models)
+    {\texttt{models/*.joblib}\\[-1pt]
+     {\scriptsize LR + DT + Scaler}};
+\node[data, minimum width=4.6cm, below right=0.85cm and -1.4cm of train] (metrics)
+    {\texttt{results/metrics/}\\[-1pt]
+     {\scriptsize accuracy, precision, recall, F1, AUC-ROC}};
+
+% ─── Étape 3 : graphiques ───────────────────────────────────────────────
+\node[process, minimum width=6.6cm, below=2.8cm of train] (plotstep)
+    {\texttt{plot\_results.py}\\[-1pt]
+     {\scriptsize 9 graphiques d'évaluation}};
+
+\node[artefact, minimum width=6.6cm, below=of plotstep] (pngs)
+    {\texttt{results/plots/*.png}\\[-1pt]
+     {\scriptsize matrices de confusion, courbes ROC, synthèses}};
+
+% ─── Flèches (annotées avec les cibles Make) ────────────────────────────
+\draw[arrow] (raw)       -- node[flowlabel, right=2pt] {\texttt{make split}} (split);
+\draw[arrow] (split)     -- (processed);
+\draw[arrow] (processed) -- node[flowlabel, right=2pt] {\texttt{make train}} (train);
+\draw[arrow] (train.south) ++(0,0) -- ++(0,-0.3) -| (models.north);
+\draw[arrow] (train.south) -- ++(0,-0.3) -| (metrics.north);
+\draw[arrow] (metrics.south) |- node[flowlabel, above=1pt, pos=0.75] {\texttt{make plots}}
+             ($(plotstep.north)+(0,0.4)$) -- (plotstep.north);
+\draw[arrow] (plotstep)  -- (pngs);
+
+\end{tikzpicture}
