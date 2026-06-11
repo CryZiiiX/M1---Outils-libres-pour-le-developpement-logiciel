@@ -1,5 +1,20 @@
-# Vue 3 + Vite
+# Front-end - Prédiction du risque de crédit
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Interface web du projet (Vue 3 + Vite + Tailwind CSS) : formulaire de
+demande de prédiction, affichage des résultats des deux modèles et
+historique des prédictions.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Développement local
+
+```bash
+npm install
+npm run dev      # http://localhost:5173 (API attendue sur :8000)
+```
+
+L'URL de l'API est configurable via la variable d'environnement
+`VITE_API_URL` (par défaut `http://localhost:8000`).
+
+## Via Docker
+
+Le service `web` de `../docker-compose.yml` construit et lance ce front-end
+automatiquement : voir `make docker-up` à la racine du projet.
