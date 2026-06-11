@@ -1,3 +1,15 @@
+<!--
+=============================================================================
+Fichier : front-end/src/views/PredictView.vue
+Rôle    : Afficher le formulaire de prédiction et présenter les résultats
+retournés par l'API pour chaque modèle.
+Projet  : Prédiction du risque de crédit bancaire
+UE      : Outils libres pour le développement logiciel
+Auteur  : Maxime BRONNY - 19009314
+Version : V1
+Cadre   : Master 1 Big Data - Université Paris 8
+=============================================================================
+-->
 <template>
   <div class="space-y-8">
     <PredictionForm :loading="loading" @submit="handleSubmit" />
@@ -29,8 +41,15 @@ const error = ref(null)
 
 
 /**
- * Envoie le formulaire à l'API /predict et affiche les résultats LR/DT.
- * @param {Object} form - Données du formulaire (person_age, person_income, etc.)
+ * Soumet le formulaire de prédiction à l'API.
+ *
+ * La fonction passe la vue en état de chargement (le bouton est désactivé
+ * pendant la requête), appelle l'API /predict puis affiche les résultats
+ * des deux modèles. En cas d'erreur (payload refusé en 400 ou API
+ * injoignable), le message renvoyé par le client API est affiché à
+ * l'utilisateur à la place des résultats.
+ *
+ * @param {Object} form - Données saisies dans le formulaire (11 champs + model_choice).
  */
 async function handleSubmit(form) {
   loading.value = true

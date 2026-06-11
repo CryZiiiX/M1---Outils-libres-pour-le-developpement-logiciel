@@ -1,25 +1,16 @@
 #!/usr/bin/env python3
-"""
-/*****************************************************************************************************
-
-Nom : scripts/compare_with_sklearn.py
-
-Rôle : Script d'entraînement et d'évaluation des modèles scikit-learn
-
-Auteur : Maxime BRONNY
-
-Version : V1
-
-Licence : Réalisé dans le cadre du cours Technique d'intelligence artificiel M1 INFORMATIQUE BIG-DATA
-
-Usage :
-
-    Pour compiler : N/A (script Python)
-
-    Pour executer : python3 scripts/compare_with_sklearn.py
-
-******************************************************************************************************/
-"""
+# =============================================================================
+# Fichier : back-end/scripts/compare_with_sklearn.py
+# Rôle    : Entraîner et évaluer les modèles scikit-learn (régression logistique
+#           et arbre de décision) : imputation anti-fuite, validation croisée
+#           de max_depth, variantes class_weight, métriques et sérialisation.
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
+"""Entraîner et évaluer les modèles scikit-learn (régression logistique et arbre de décision) : imputation anti-fuite, validation croisée de max_depth, variantes class_weight, métriques et sérialisation."""
 
 import pandas as pd
 import numpy as np
@@ -98,10 +89,19 @@ def apply_imputation(df, impute_values):
 
 
 def load_train_test_from_files():
-    """Charge train.csv et test.csv depuis data/processed.
+    """Charge les ensembles train et test préparés par make split.
+
+    Les CSV de data/processed/ sont bruts (catégories en texte, valeurs
+    manquantes conservées) : on encode donc chaque ensemble, puis on impute
+    les valeurs manquantes avec des moyennes calculées sur le train
+    uniquement, appliquées ensuite aux deux ensembles. Calculer ces moyennes
+    sur le test (ou sur le tout) serait une fuite de données : le test doit
+    rester totalement inconnu du prétraitement.
 
     Returns:
-        Tuple (X_train, X_test, y_train, y_test) ou None si fichiers inexistants.
+        tuple: (X_train, X_test, y_train, y_test) prêts pour l'entraînement,
+        ou None si les fichiers n'existent pas (le main bascule alors sur le
+        dataset brut).
     """
     train_path = BASE_DIR / "data" / "processed" / "train.csv"
     test_path = BASE_DIR / "data" / "processed" / "test.csv"
@@ -157,12 +157,23 @@ def load_and_preprocess_data():
 
 
 def train_sklearn_model(X_train, y_train, X_test, y_test):
-    """Entraîne la régression logistique et génère la courbe de coût.
+    """Entraîne la régression logistique et trace sa courbe de coût.
 
-    StandardScaler sur train, transform sur test. Sauvegarde lr_python_cost_curve.csv.
+    Deux choses importantes ici. D'abord la normalisation : le StandardScaler
+    est ajusté (fit) sur le train uniquement, puis appliqué (transform) au
+    test - ajuster le scaler sur le test serait une fuite de données. Ensuite
+    la courbe de coût : on réentraîne le modèle avec un nombre croissant
+    d'itérations (50 à 1000) et on mesure la log loss à chaque palier, ce qui
+    permet de visualiser la convergence de l'optimiseur L-BFGS dans le
+    rapport. Le modèle final utilise 1000 itérations.
+
+    Args:
+        X_train, y_train: Données d'entraînement.
+        X_test, y_test: Données de test (utilisées seulement pour le transform).
 
     Returns:
-        Tuple (model, scaler, X_train_scaled, X_test_scaled).
+        tuple: (modèle entraîné, scaler ajusté, X_train normalisé,
+        X_test normalisé).
     """
     print("\n Entraînement du modèle scikit-learn...")
     scaler = StandardScaler()
@@ -200,10 +211,18 @@ def train_sklearn_model(X_train, y_train, X_test, y_test):
 
 
 def train_sklearn_decision_tree(X_train, y_train, X_test, y_test):
-    """Entraîne l'arbre de décision (max_depth=7, gini, min_samples_split=20).
+    """Entraîne l'arbre de décision avec des garde-fous contre le
+    surapprentissage.
+
+    Un arbre sans contrainte apprendrait le train par cœur. On limite donc
+    la profondeur à 7 (valeur justifiée par validation croisée, voir
+    cross_validate_max_depth), et on impose un minimum de 20 échantillons
+    pour diviser un nœud et de 10 par feuille : cela empêche l'arbre de
+    créer des règles à partir de quelques cas particuliers. Le temps
+    d'entraînement est mesuré pour les statistiques du rapport.
 
     Returns:
-        Tuple (model, training_time).
+        tuple: (modèle entraîné, durée d'entraînement en secondes).
     """
     print("\n Entraînement de l'arbre de décision scikit-learn...")
     model = DecisionTreeClassifier(
@@ -318,9 +337,16 @@ def compare_class_weight_variants(X_train_scaled, y_train, X_test_scaled, y_test
 
 
 def load_or_train_lr(X_train, y_train, X_test, y_test, force_retrain):
-    """Charge LR et scaler depuis models/ ou entraîne et sauvegarde.
+    """Charge la régression logistique depuis models/ ou l'entraîne si besoin.
 
-    Force_retrain ou fichiers absents déclenchent l'entraînement.
+    Ce mécanisme de cache évite de réentraîner à chaque exécution : si les
+    fichiers .joblib existent déjà, on les recharge simplement (et on
+    recalcule les versions normalisées des données avec le scaler sauvegardé).
+    La variable d'environnement FORCE_RETRAIN=1 (cible make train-force)
+    permet de forcer un réentraînement complet.
+
+    Returns:
+        tuple: (modèle, scaler, X_train normalisé, X_test normalisé).
     """
     if force_retrain or not LR_MODEL_PATH.exists() or not SCALER_PATH.exists():
         model, scaler, X_train_scaled, X_test_scaled = train_sklearn_model(
@@ -341,7 +367,14 @@ def load_or_train_lr(X_train, y_train, X_test, y_test, force_retrain):
 
 
 def load_or_train_dt(X_train, y_train, X_test, y_test, force_retrain):
-    """Charge DT depuis models/ ou entraîne et sauvegarde."""
+    """Charge l'arbre de décision depuis models/ ou l'entraîne si besoin.
+
+    Même logique de cache que pour la régression logistique. Le temps
+    d'entraînement vaut 0.0 quand le modèle est rechargé depuis le disque.
+
+    Returns:
+        tuple: (modèle, durée d'entraînement en secondes).
+    """
     if force_retrain or not DT_MODEL_PATH.exists():
         dt_model, training_time = train_sklearn_decision_tree(
             X_train, y_train, X_test, y_test
@@ -435,7 +468,21 @@ def save_python_train_metrics(y_true, y_pred, filename):
 
 
 def calculate_cross_entropy_loss(y_true, y_pred_proba):
-    """Calcule la perte d'entropie croisée (log loss). Probabilités clipées à [1e-15, 1-1e-15]."""
+    """Calcule la perte d'entropie croisée (log loss) de la régression
+    logistique.
+
+    C'est la fonction de coût que la régression logistique minimise pendant
+    l'entraînement : elle pénalise fortement les prédictions confiantes mais
+    fausses. Les probabilités sont bornées à [1e-15, 1 - 1e-15] avant le
+    logarithme, car log(0) vaudrait moins l'infini et ferait planter le calcul.
+
+    Args:
+        y_true: Labels réels (0 ou 1).
+        y_pred_proba: Probabilités prédites par le modèle.
+
+    Returns:
+        float: Valeur moyenne de la perte sur l'ensemble fourni.
+    """
     epsilon = 1e-15
     y_pred_proba = np.clip(y_pred_proba, epsilon, 1 - epsilon)
     loss = -np.mean(y_true * np.log(y_pred_proba) + (1 - y_true) * np.log(1 - y_pred_proba))
@@ -463,7 +510,15 @@ def save_roc_data(y_true, y_proba, filename):
 
 
 def main():
-    """Orchestre l'entraînement LR et DT, métriques et sauvegarde. FORCE_RETRAIN=1 force le réentraînement."""
+    """Orchestre tout le pipeline d'entraînement et d'évaluation.
+
+    Déroulement : chargement des données (fichiers préparés ou dataset brut
+    en secours, avec imputation anti-fuite dans les deux cas), entraînement
+    ou rechargement des deux modèles, analyses de justification (validation
+    croisée de max_depth, variantes class_weight), puis calcul et sauvegarde
+    des métriques, matrices de confusion et données ROC pour chaque modèle.
+    FORCE_RETRAIN=1 force le réentraînement complet.
+    """
     force_retrain = os.environ.get("FORCE_RETRAIN", "").lower() in ("1", "true", "yes")
     
     print("\n" + "=" * 60)

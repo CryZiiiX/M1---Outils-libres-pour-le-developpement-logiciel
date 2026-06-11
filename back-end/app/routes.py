@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/app/routes.py
+# Rôle    : Définir les routes de l'API Flask : /health, /predict, /predictions,
+#           /predictions/<id>.
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Endpoints de l'API Flask.
 
 Expose les routes POST /predict, GET /predictions, GET /predictions/<id> et GET /health.
@@ -28,19 +38,21 @@ def health():
 
 @router.post("/predict")
 def create_prediction():
-    """Lance une prédiction et l'enregistre en base.
+    """Traite une demande de prédiction de bout en bout.
 
-    Valide le payload, appelle predict_lr et/ou predict_dt selon model_choice,
-    persiste le résultat et retourne la réponse JSON.
-
-    Args:
-        Body JSON : 11 champs requis (person_age, person_income, ...) + model_choice optionnel.
+    C'est la route principale de l'API. Elle enchaîne quatre étapes :
+    1. validation du payload JSON par le schéma Marshmallow (types, bornes,
+       valeurs catégorielles) - toute erreur renvoie un 400 avec le détail ;
+    2. prédiction avec la régression logistique et/ou l'arbre de décision,
+       selon le paramètre model_choice (lr, dt ou both) ;
+    3. persistance en base de l'entrée et des résultats, dans une session
+       fermée automatiquement par get_db ;
+    4. réponse 201 contenant l'identifiant créé et les résultats de chaque
+       modèle (null pour le modèle non demandé).
 
     Returns:
-        JSON : id, created_at, model_used, lr, dt. Status 201.
-
-    Raises:
-        ValidationError (400): Payload invalide (champs manquants, hors bornes).
+        JSON : id, created_at, model_used, lr, dt - statut 201, ou 400 si
+        le payload est invalide.
     """
     try:
         payload = input_schema.load(request.get_json(silent=True) or {})
@@ -98,13 +110,14 @@ def create_prediction():
 
 @router.get("/predictions")
 def list_predictions():
-    """Renvoie l'historique des prédictions (plus récentes d'abord).
+    """Renvoie l'historique des prédictions, de la plus récente à la plus
+    ancienne.
 
-    Args:
-        limit (query): Nombre max de résultats (1-200, défaut 50).
+    Le paramètre de requête limit (défaut 50) est borné entre 1 et 200 pour
+    éviter de renvoyer une réponse démesurée si un client demande trop.
 
     Returns:
-        Liste JSON des prédictions (schema PredictionRecordSchema).
+        Liste JSON des prédictions, sérialisées par PredictionRecordSchema.
     """
     limit = request.args.get("limit", 50, type=int)
     if limit < 1 or limit > 200:

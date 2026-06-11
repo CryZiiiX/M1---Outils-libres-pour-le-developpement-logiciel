@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/app/predict.py
+# Rôle    : Charger les modèles joblib et produire les prédictions de risque
+#           (probabilité, niveau de risque, décision selon les seuils métier).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Chargement des modèles et logique de prédiction.
 
 Charge au démarrage les modèles joblib (LR, scaler, DT) et expose predict_lr
@@ -29,15 +39,22 @@ except FileNotFoundError as exc:
 
 
 def _classify(probability: float) -> tuple[str, str]:
-    """Détermine le niveau de risque et la décision selon la probabilité de défaut.
+    """Traduit une probabilité de défaut en niveau de risque et en décision
+    de crédit compréhensibles par l'utilisateur.
 
-    Seuils métier : < 30 % = Safe, 30-60 % = Moyennement à risque, > 60 % = Refusé.
+    Les modèles renvoient seulement une probabilité entre 0 et 1 : ce sont
+    les seuils métier qui la transforment en décision. En dessous de 30 %
+    de risque, le prêt est accepté totalement ; entre 30 et 60 %, il est
+    accepté partiellement (profil moyennement risqué) ; au-delà de 60 %,
+    il est refusé. Ces seuils sont volontairement prudents et pourraient
+    être ajustés selon la politique de l'établissement prêteur.
 
     Args:
-        probability: Probabilité de défaut (0-1) prédite par le modèle.
+        probability (float): Probabilité de défaut prédite (entre 0 et 1).
 
     Returns:
-        Tuple (risk_level, credit_decision).
+        tuple: (niveau de risque, décision de crédit), deux chaînes affichées
+        telles quelles dans l'interface.
     """
     if probability < 0.3:  # Politique conservatrice : < 30 % défaut = Safe
         return "Safe", "Accepté totalement"
@@ -48,19 +65,21 @@ def _classify(probability: float) -> tuple[str, str]:
 
 
 def predict_lr(data: dict) -> dict:
-    """Prédiction avec la régression logistique.
+    """Prédit le risque de défaut avec la régression logistique.
 
-    Applique encode_input puis le scaler (StandardScaler) avant prédiction.
-    Le modèle LR nécessite une normalisation des features.
+    Les données sont d'abord encodées en vecteur numérique, puis normalisées
+    avec le StandardScaler appris à l'entraînement : la régression logistique
+    a été entraînée sur des features centrées-réduites, il faut donc appliquer
+    exactement la même transformation ici, sinon la prédiction n'aurait aucun
+    sens. Le passage par un DataFrame avec les noms de colonnes évite les
+    avertissements de scikit-learn sur les features sans nom.
 
     Args:
-        data: Dictionnaire des champs du formulaire (clés alignées avec preprocess).
+        data (dict): Champs du formulaire validés (clés alignées avec preprocess).
 
     Returns:
-        Dict avec probability, risk_level, credit_decision.
-
-    Raises:
-        FileNotFoundError: Si models/*.joblib absents (exécuter make train).
+        dict: probability (arrondie à 4 décimales), risk_level et
+        credit_decision issus des seuils métier.
     """
     features = encode_input(data)
     features_df = pd.DataFrame(features, columns=FEATURE_ORDER)
@@ -76,20 +95,20 @@ def predict_lr(data: dict) -> dict:
 
 
 def predict_dt(data: dict) -> dict:
-    """Prédiction avec l'arbre de décision.
+    """Prédit le risque de défaut avec l'arbre de décision.
 
-    Applique encode_input uniquement. L'arbre de décision n'utilise pas
-    le scaler (features brutes). DataFrame avec noms de colonnes pour
-    éviter les warnings sklearn.
+    Contrairement à la régression logistique, l'arbre n'a pas besoin de
+    normalisation : ses décisions reposent sur des comparaisons à des seuils
+    bruts (par exemple « revenu < 35 000 »), qui ne sont pas affectées par
+    l'échelle des variables. On encode donc les données et on prédit
+    directement, sans passer par le scaler.
 
     Args:
-        data: Dictionnaire des champs du formulaire.
+        data (dict): Champs du formulaire validés.
 
     Returns:
-        Dict avec probability, risk_level, credit_decision.
-
-    Raises:
-        FileNotFoundError: Si models/*.joblib absents (exécuter make train).
+        dict: probability (arrondie à 4 décimales), risk_level et
+        credit_decision issus des seuils métier.
     """
     features = encode_input(data)
     features_df = pd.DataFrame(features, columns=FEATURE_ORDER)

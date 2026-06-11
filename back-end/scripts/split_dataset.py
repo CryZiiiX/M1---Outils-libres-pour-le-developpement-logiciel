@@ -1,25 +1,15 @@
 #!/usr/bin/env python3
-"""
-/*****************************************************************************************************
-
-Nom : scripts/split_dataset.py
-
-Rôle : Script pour diviser le dataset en ensembles train/test de manière stratifiée
-
-Auteur : Maxime BRONNY
-
-Version : V1
-
-Licence : Réalisé dans le cadre du cours Technique d'intelligence artificiel M1 INFORMATIQUE BIG-DATA
-
-Usage :
-
-    Pour compiler : N/A (script Python)
-
-    Pour executer : python3 scripts/split_dataset.py
-
-******************************************************************************************************/
-"""
+# =============================================================================
+# Fichier : back-end/scripts/split_dataset.py
+# Rôle    : Diviser le dataset en ensembles train/test stratifiés (80/20),
+#           sauvegardés dans data/processed/.
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
+"""Diviser le dataset en ensembles train/test stratifiés (80/20), sauvegardés dans data/processed/."""
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -29,19 +19,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def split_and_save_dataset(input_file, output_dir, test_size=0.2, random_state=42):
-    """Divise le dataset en train/test stratifié et sauvegarde train.csv, test.csv, split_info.txt.
+    """Divise le dataset en ensembles d'entraînement et de test, et sauvegarde
+    le résultat.
 
-    Stratification sur loan_status pour préserver la proportion des classes.
-    Sortie : train.csv, test.csv (sans encodage, brut), split_info.txt.
+    Le split est stratifié sur loan_status : comme seulement 22 % des
+    emprunteurs sont en défaut, un découpage purement aléatoire pourrait
+    donner un test set avec une proportion de défauts différente du train,
+    ce qui fausserait l'évaluation. La stratification garantit la même
+    répartition des classes dans les deux ensembles (vérifiée et affichée).
+    Les CSV sont sauvegardés bruts, sans encodage : le prétraitement est fait
+    plus tard par le script d'entraînement. Un fichier split_info.txt trace
+    les paramètres et les effectifs pour la reproductibilité.
 
     Args:
-        input_file: Chemin du CSV brut (ex: data/raw/credit_risk_dataset.csv).
-        output_dir: Répertoire de sortie (ex: data/processed).
-        test_size: Proportion test (défaut 0.2).
-        random_state: Graine pour reproductibilité.
-
-    Returns:
-        None. Sortie en early-return si loan_status absent.
+        input_file: Chemin du CSV brut (data/raw/credit_risk_dataset.csv).
+        output_dir: Répertoire de sortie (data/processed).
+        test_size (float): Proportion réservée au test (0.2 = 20 %).
+        random_state (int): Graine aléatoire, fixée à 42 pour que le split
+            soit identique à chaque exécution.
     """
     input_file = Path(input_file)
     output_dir = Path(output_dir)

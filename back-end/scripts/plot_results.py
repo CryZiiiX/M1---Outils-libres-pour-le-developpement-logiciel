@@ -1,29 +1,15 @@
 #!/usr/bin/env python3
-"""
-/*****************************************************************************************************
-
-Nom : scripts/plot_results.py
-
-Rôle : Script de visualisation des résultats du modèle (génération de graphiques)
-
-Auteur : Maxime BRONNY
-
-Version : V1
-
-Licence : Réalisé dans le cadre du cours Technique d'intelligence artificiel M1 INFORMATIQUE BIG-DATA
-
-Usage :
-
-    Pour compiler : N/A (script Python)
-
-    Pour executer : python3 scripts/plot_results.py
-
-******************************************************************************************************/
-
-Prérequis : make train (génère results/metrics/*.txt et results/plots/data/*.csv).
-Structure attendue : results/metrics/logistic_regression/, decision_tree/,
-results/plots/data/ (fichiers ROC, cost curve).
-"""
+# =============================================================================
+# Fichier : back-end/scripts/plot_results.py
+# Rôle    : Générer les graphiques d'évaluation des modèles : matrices de
+#           confusion, courbes ROC, comparaisons train/test et synthèses.
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
+"""Générer les graphiques d'évaluation des modèles : matrices de confusion, courbes ROC, comparaisons train/test et synthèses."""
 
 import pandas as pd
 import numpy as np
@@ -339,6 +325,14 @@ def plot_lr_python_cost_curve():
         return False
 
 def plot_python_roc_curves():
+    """Trace les courbes ROC des deux modèles sur le même graphique.
+
+    La courbe ROC montre le compromis entre vrais positifs et faux positifs
+    pour tous les seuils de décision possibles : plus la courbe s'éloigne de
+    la diagonale (classifieur aléatoire), meilleur est le modèle. Les données
+    (fpr, tpr) viennent des CSV générés à l'entraînement et l'AUC est relue
+    depuis les fichiers de métriques pour l'afficher dans la légende.
+    """
     print("\n Génération des courbes ROC (Python)...")
     
     lr_roc_file = BASE_DIR / "results" / "plots" / "data" / "lr_python_roc_data.csv"
@@ -398,11 +392,27 @@ def plot_python_roc_curves():
         return False
 
 def load_metrics(train_file, test_file):
-    """Parse les fichiers métriques (format key: value) et retourne deux dicts."""
+    """Lit les fichiers de métriques train et test et les convertit en
+    dictionnaires.
+
+    Les métriques sont stockées en texte simple (« Accuracy: 0.9273 ») par le
+    script d'entraînement ; cette fonction les re-parse pour que les
+    graphiques puissent les afficher. Un fichier absent ou illisible donne
+    simplement un dictionnaire vide, ce qui permet de générer les autres
+    graphiques sans planter.
+
+    Args:
+        train_file: Chemin du fichier de métriques train.
+        test_file: Chemin du fichier de métriques test.
+
+    Returns:
+        tuple: (métriques train, métriques test), deux dicts nom -> valeur.
+    """
     train_metrics = {}
     test_metrics = {}
     
     def parse_metrics(file_path, metrics_dict):
+        """Remplit metrics_dict à partir d'un fichier « Nom: valeur »."""
         try:
             if file_path and Path(file_path).exists():
                 with open(file_path, 'r') as f:

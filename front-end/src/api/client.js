@@ -1,15 +1,30 @@
+/* =============================================================================
+ * Fichier : front-end/src/api/client.js
+ * Rôle    : Centraliser les appels HTTP entre l'interface Vue 3 et l'API Flask
+ *           (prédiction, historique, détail), avec gestion d'erreurs unifiée.
+ * Projet  : Prédiction du risque de crédit bancaire
+ * UE      : Outils libres pour le développement logiciel
+ * Auteur  : Maxime BRONNY - 19009314
+ * Version : V1
+ * Cadre   : Master 1 Big Data - Université Paris 8
+ * ============================================================================= */
 /** URL de base de l'API. VITE_API_URL en build, localhost:8000 par défaut. */
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 /**
  * Effectue une requête HTTP vers l'API et retourne le JSON parsé.
  *
+ * Centraliser les appels ici évite de répéter la logique de communication
+ * (en-têtes, gestion d'erreurs) dans chaque composant Vue. Deux familles
+ * d'erreurs sont distinguées : si l'API répond avec un code d'erreur, on
+ * remonte le message "detail" qu'elle fournit ; si elle est injoignable
+ * (service éteint, mauvaise URL), on remplace le "Failed to fetch" brut du
+ * navigateur par un message en français compréhensible par l'utilisateur.
+ *
  * @param {string} path - Chemin de l'endpoint (ex: /predict, /predictions).
  * @param {RequestInit} [options={}] - Options fetch (method, body, etc.).
- * @returns {Promise<Object>} Réponse JSON.
- * @throws {Error} Si res.ok est false (message body.detail ou "Erreur {status}"),
- *   ou si l'API est injoignable (message explicite en français au lieu du
- *   "Failed to fetch" brut du navigateur).
+ * @returns {Promise<Object>} Réponse JSON de l'API.
+ * @throws {Error} Message exploitable directement dans l'interface.
  */
 async function request(path, options = {}) {
   let res

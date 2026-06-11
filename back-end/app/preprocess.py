@@ -1,10 +1,20 @@
+# =============================================================================
+# Fichier : back-end/app/preprocess.py
+# Rôle    : Encoder les variables d'une demande de crédit dans l'ordre attendu
+#           par les modèles (mappings partagés avec l'entraînement).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Prétraitement des données pour la prédiction.
 
-Encodage des variables catégorielles aligné avec compare_with_sklearn._preprocess_dataframe.
+Encodage des variables catégorielles, aligné avec compare_with_sklearn._encode_dataframe.
 
 Invariant : FEATURE_ORDER doit rester identique à l'ordre des colonnes utilisées
 à l'entraînement (df.drop('loan_status') après encodage). Toute modification
-doit être synchronisée avec _preprocess_dataframe dans compare_with_sklearn.py.
+doit être synchronisée avec _encode_dataframe dans compare_with_sklearn.py.
 """
 import numpy as np
 
@@ -33,15 +43,21 @@ FEATURE_ORDER = [
 
 
 def encode_input(data: dict) -> np.ndarray:
-    """Encode les données brutes d'un formulaire en vecteur numérique.
+    """Convertit les données reçues depuis l'API en vecteur numérique
+    utilisable par les modèles de machine learning.
 
-    Applique les mappings catégoriels et ordonne les features selon FEATURE_ORDER.
+    Les quatre variables catégorielles (statut de propriété, objet du prêt,
+    grade, antécédent de défaut) sont transformées en entiers via les mêmes
+    dictionnaires de correspondance que ceux utilisés à l'entraînement, puis
+    les 11 variables sont rangées dans l'ordre exact de FEATURE_ORDER. Cette
+    étape est importante : un ordre différent des features donnerait une
+    prédiction incohérente sans déclencher la moindre erreur.
 
     Args:
-        data: Dict avec les clés correspondant aux champs du formulaire.
+        data (dict): Données déjà validées par le schéma Marshmallow.
 
     Returns:
-        np.ndarray de shape (1, 11) prêt pour prédiction.
+        numpy.ndarray: Tableau de forme (1, 11), prêt à être passé aux modèles.
     """
     encoded = {
         'person_age': data['person_age'],
