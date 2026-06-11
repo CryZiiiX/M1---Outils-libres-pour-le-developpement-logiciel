@@ -1,3 +1,15 @@
+<!--
+=============================================================================
+Fichier : front-end/src/App.vue
+Rôle    : Définir la structure générale de l'interface : barre de navigation
+et zone d'affichage des vues.
+Projet  : Prédiction du risque de crédit bancaire
+UE      : Outils libres pour le développement logiciel
+Auteur  : Maxime BRONNY - 19009314
+Version : V1
+Cadre   : Master 1 Big Data - Université Paris 8
+=============================================================================
+-->
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Navbar -->

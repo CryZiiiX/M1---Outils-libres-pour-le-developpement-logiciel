@@ -1,3 +1,15 @@
+<!--
+=============================================================================
+Fichier : front-end/src/views/DetailView.vue
+Rôle    : Afficher le détail complet d'une prédiction sélectionnée
+(données saisies et résultats des deux modèles).
+Projet  : Prédiction du risque de crédit bancaire
+UE      : Outils libres pour le développement logiciel
+Auteur  : Maxime BRONNY - 19009314
+Version : V1
+Cadre   : Master 1 Big Data - Université Paris 8
+=============================================================================
+-->
 <template>
   <div class="space-y-6">
     <router-link to="/history" class="text-indigo-600 hover:underline text-sm">&larr; Retour à l'historique</router-link>

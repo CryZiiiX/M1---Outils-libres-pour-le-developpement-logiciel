@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/tests/test_schemas.py
+# Rôle    : Tester la validation Marshmallow : payloads valides, bornes
+#           numériques, valeurs catégorielles, champs requis (7 tests).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Tests unitaires pour app.schemas (validation Marshmallow)."""
 import pytest
 

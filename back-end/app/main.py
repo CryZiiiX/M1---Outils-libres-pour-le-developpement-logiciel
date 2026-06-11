@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/app/main.py
+# Rôle    : Créer l'application Flask : CORS, enregistrement des routes et
+#           handlers d'erreur globaux (module chargé par Gunicorn).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Point d'entrée de l'API Flask.
 
 Crée l'application Flask, configure CORS, enregistre le blueprint des routes

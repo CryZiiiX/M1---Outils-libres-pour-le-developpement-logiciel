@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/app/schemas.py
+# Rôle    : Valider les payloads reçus par l'API (Marshmallow) et sérialiser les
+#           enregistrements retournés.
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Schémas Marshmallow pour la validation des requêtes et réponses.
 
 PredictionInputSchema : validation POST /predict.

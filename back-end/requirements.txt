@@ -1,6 +1,13 @@
-# ============================================================================
-# Dépendances Python pour les Scripts d'Analyse et de Visualisation
-# ============================================================================
+# =============================================================================
+# Fichier : back-end/requirements.txt
+# Rôle    : Lister les dépendances Python des scripts du pipeline ML
+#           (analyse, entraînement, visualisation).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 #
 # Ce fichier contient toutes les dépendances Python nécessaires pour exécuter
 # les scripts d'analyse, de visualisation et de comparaison du projet.

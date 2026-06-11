@@ -1,25 +1,15 @@
 #!/usr/bin/env python3
-"""
-/*****************************************************************************************************
-
-Nom : scripts/analyze_missing_values.py
-
-Rôle : Script d'analyse des valeurs manquantes du dataset (détection MCAR)
-
-Auteur : Maxime BRONNY
-
-Version : V1
-
-Licence : Réalisé dans le cadre du cours Technique d'intelligence artificiel M1 INFORMATIQUE BIG-DATA
-
-Usage :
-
-    Pour compiler : N/A (script Python)
-
-    Pour executer : python3 scripts/analyze_missing_values.py
-
-******************************************************************************************************/
-"""
+# =============================================================================
+# Fichier : back-end/scripts/analyze_missing_values.py
+# Rôle    : Analyser les valeurs manquantes du dataset (effectifs par variable,
+#           discussion du caractère aléatoire).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
+"""Analyser les valeurs manquantes du dataset (effectifs par variable, discussion du caractère aléatoire)."""
 
 import pandas as pd
 import numpy as np

@@ -1,7 +1,13 @@
-/**
- * Configuration Vite : Vue, Tailwind.
- * host: 0.0.0.0 pour accepter les connexions depuis l'hôte (Docker, réseau local).
- */
+/* =============================================================================
+ * Fichier : front-end/vite.config.js
+ * Rôle    : Configurer Vite : plugins Vue et Tailwind, écoute réseau 0.0.0.0
+ *           pour l'accès depuis l'hôte (Docker).
+ * Projet  : Prédiction du risque de crédit bancaire
+ * UE      : Outils libres pour le développement logiciel
+ * Auteur  : Maxime BRONNY - 19009314
+ * Version : V1
+ * Cadre   : Master 1 Big Data - Université Paris 8
+ * ============================================================================= */
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'

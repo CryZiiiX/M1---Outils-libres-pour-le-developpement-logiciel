@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/tests/test_api.py
+# Rôle    : Tester les endpoints REST de bout en bout : codes 200/201/400/404,
+#           persistance et bornes de validation (7 tests d'intégration).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Tests d'intégration API Flask."""
 import pytest
 

@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/tests/test_preprocess.py
+# Rôle    : Tester l'encodage des features : dimensions, mappings catégoriels
+#           et ordre des colonnes (3 tests).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Tests unitaires pour app.preprocess.encode_input."""
 import numpy as np
 import pytest

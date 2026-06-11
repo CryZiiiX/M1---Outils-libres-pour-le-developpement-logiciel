@@ -1,3 +1,15 @@
+<!--
+=============================================================================
+Fichier : front-end/src/components/ResultCard.vue
+Rôle    : Présenter le résultat d'un modèle : probabilité de défaut, niveau
+de risque et décision de crédit.
+Projet  : Prédiction du risque de crédit bancaire
+UE      : Outils libres pour le développement logiciel
+Auteur  : Maxime BRONNY - 19009314
+Version : V1
+Cadre   : Master 1 Big Data - Université Paris 8
+=============================================================================
+-->
 <template>
   <div class="bg-white rounded-lg shadow p-6 space-y-4">
     <h3 class="text-base font-semibold text-gray-800">{{ title }}</h3>

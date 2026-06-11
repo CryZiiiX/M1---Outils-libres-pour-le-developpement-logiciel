@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/tests/test_imputation.py
+# Rôle    : Vérifier l'absence de fuite de données dans l'imputation : les
+#           statistiques proviennent du train uniquement (3 tests).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Tests anti-fuite de données pour l'imputation du pipeline ML.
 
 Vérifie que les statistiques d'imputation sont apprises sur le train set

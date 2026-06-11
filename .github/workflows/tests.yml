@@ -1,6 +1,15 @@
-# CI : exécute le pipeline ML puis la suite de tests à chaque push/PR.
-# Le dataset et les scripts étant versionnés, `make test` entraîne les
-# modèles (split + train) avant de lancer pytest, comme en local.
+# =============================================================================
+# Fichier : .github/workflows/tests.yml
+# Rôle    : Définir la chaîne d'intégration continue : entraînement des modèles,
+#           exécution des 25 tests et mesure de la couverture à chaque push/PR.
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
+# Le dataset et les scripts étant versionnés, make test entraîne les modèles
+# (split + train) avant de lancer pytest, comme en local.
 name: Tests
 
 on:

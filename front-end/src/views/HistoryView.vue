@@ -1,3 +1,14 @@
+<!--
+=============================================================================
+Fichier : front-end/src/views/HistoryView.vue
+Rôle    : Afficher l'historique des prédictions enregistrées en base.
+Projet  : Prédiction du risque de crédit bancaire
+UE      : Outils libres pour le développement logiciel
+Auteur  : Maxime BRONNY - 19009314
+Version : V1
+Cadre   : Master 1 Big Data - Université Paris 8
+=============================================================================
+-->
 <template>
   <div class="space-y-4">
     <h2 class="text-xl font-bold text-gray-800">Historique des prédictions</h2>

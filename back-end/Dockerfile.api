@@ -1,3 +1,12 @@
+# =============================================================================
+# Fichier : back-end/Dockerfile.api
+# Rôle    : Construire l'image Docker exécutant l'API Flask via Gunicorn.
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 # Image API Flask : Gunicorn sur app.main:app
 # Prérequis : back-end/models/*.joblib doivent exister (exécuter make train avant build)
 FROM python:3.11-slim

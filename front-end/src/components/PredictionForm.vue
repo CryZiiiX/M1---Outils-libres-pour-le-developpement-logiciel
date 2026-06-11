@@ -1,3 +1,15 @@
+<!--
+=============================================================================
+Fichier : front-end/src/components/PredictionForm.vue
+Rôle    : Saisir les 11 caractéristiques d'une demande de crédit, avec calcul
+automatique du ratio prêt/revenu.
+Projet  : Prédiction du risque de crédit bancaire
+UE      : Outils libres pour le développement logiciel
+Auteur  : Maxime BRONNY - 19009314
+Version : V1
+Cadre   : Master 1 Big Data - Université Paris 8
+=============================================================================
+-->
 <template>
   <form @submit.prevent="$emit('submit', form)" class="bg-white rounded-lg shadow p-6 space-y-6">
     <h2 class="text-lg font-semibold text-gray-800">Informations du demandeur</h2>

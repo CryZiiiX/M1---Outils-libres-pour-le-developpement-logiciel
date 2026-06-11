@@ -1,9 +1,14 @@
-# ============================================================================
-# Makefile - Prédiction du Risque de Crédit (Python)
-# ============================================================================
-# Pipeline Python pour la prédiction du risque de défaut de paiement bancaire.
+# =============================================================================
+# Fichier : Makefile
+# Rôle    : Automatiser les commandes du projet : préparation des données,
+#           entraînement, graphiques, tests, couverture et déploiement Docker.
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 # Dépendances : split -> train -> plots. test dépend de train (modèles requis).
-# ============================================================================
 
 # Variables : PYTHON = interpréteur, BACKEND = répertoire des scripts
 PYTHON = python3

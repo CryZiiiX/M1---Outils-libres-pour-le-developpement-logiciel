@@ -1,8 +1,13 @@
-# ============================================================================
-# Dockerfile - Prédiction du Risque de Crédit Bancaire (Python)
-# ============================================================================
-# Image Docker pour la reproductibilité du projet Python.
-# ============================================================================
+# =============================================================================
+# Fichier : Dockerfile
+# Rôle    : Construire l'image de reproduction du pipeline ML complet
+#           (exécute make all dans un environnement isolé).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 
 FROM python:3.11-slim
 

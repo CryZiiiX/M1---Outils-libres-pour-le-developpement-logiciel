@@ -1,3 +1,13 @@
+# =============================================================================
+# Fichier : back-end/tests/test_predict.py
+# Rôle    : Tester les seuils de classification métier de _classify, valeurs
+#           limites incluses (5 tests).
+# Projet  : Prédiction du risque de crédit bancaire
+# UE      : Outils libres pour le développement logiciel
+# Auteur  : Maxime BRONNY - 19009314
+# Version : V1
+# Cadre   : Master 1 Big Data - Université Paris 8
+# =============================================================================
 """Tests unitaires pour app.predict._classify (seuils de classification)."""
 import pytest
 
