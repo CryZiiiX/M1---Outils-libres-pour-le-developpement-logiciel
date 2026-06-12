@@ -410,7 +410,7 @@ Le déploiement de l'application repose sur Docker~Compose~\cite{dockercompose},
         \toprule
         \textbf{Service} & \textbf{Image} & \textbf{Port} & \textbf{Rôle} \\
         \midrule
-        \texttt{db}  & \texttt{postgres:16-alpine}  & 5432 & Base de données PostgreSQL (persistance des prédictions) \\
+        \texttt{db}  & \texttt{postgres:16-alpine}  & 5433:5432 & Base de données PostgreSQL (persistance des prédictions) \\
         \texttt{api} & \texttt{python:3.11-slim}     & 8000 & API Flask + Gunicorn (prédiction et CRUD) \\
         \texttt{web} & \texttt{node:20-alpine}       & 5173 & Front-end Vue 3 + Vite (serveur de développement) \\
         \bottomrule
@@ -848,7 +848,7 @@ npm run dev     # http://localhost:5173
 
 \section{Déploiement Docker}
 
-Le déploiement Docker requiert au préalable l'exécution de \cmd{make train} pour générer les modèles \texttt{.joblib}, qui sont copiés dans l'image de l'API au moment du build ; la cible \cmd{make docker-up} enchaîne automatiquement ces deux étapes dans le bon ordre. Si les modèles manquent malgré tout, l'API refuse de démarrer avec un message explicite indiquant la commande à lancer, plutôt qu'une erreur confuse. La commande \texttt{docker compose up -d -{}-build} construit les trois images et démarre les conteneurs dans l'ordre garanti par les healthchecks (PostgreSQL prêt avant l'API, API saine avant le front-end). Le service PostgreSQL est accessible sur le port~5432, l'API sur le port~8000 et l'interface web sur le port~5173. La vérification se fait via \texttt{curl http://localhost:8000/health}, qui retourne \texttt{\{"status": "ok"\}} si l'API est opérationnelle.
+Le déploiement Docker requiert au préalable l'exécution de \cmd{make train} pour générer les modèles \texttt{.joblib}, qui sont copiés dans l'image de l'API au moment du build ; la cible \cmd{make docker-up} enchaîne automatiquement ces deux étapes dans le bon ordre. Si les modèles manquent malgré tout, l'API refuse de démarrer avec un message explicite indiquant la commande à lancer, plutôt qu'une erreur confuse. La commande \texttt{docker compose up -d -{}-build} construit les trois images et démarre les conteneurs dans l'ordre garanti par les healthchecks (PostgreSQL prêt avant l'API, API saine avant le front-end). Le service PostgreSQL est exposé sur le port~5433 de la machine hôte (5432 à l'intérieur du réseau Docker), afin d'éviter tout conflit avec un éventuel PostgreSQL déjà installé localement ; l'API est accessible sur le port~8000 et l'interface web sur le port~5173. La vérification se fait via \texttt{curl http://localhost:8000/health}, qui retourne \texttt{\{"status": "ok"\}} si l'API est opérationnelle.
 
 \begin{lstlisting}[style=bash, caption={Déploiement avec Docker Compose}]
 # Prerequis : make train (modeles .joblib requis)
