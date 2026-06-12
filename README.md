@@ -32,7 +32,7 @@ dans `docs/presentation/`.
 - Proposer une interface web Vue 3 pour saisir une demande et consulter
   l'historique.
 - Conteneuriser l'ensemble avec Docker Compose (base PostgreSQL incluse).
-- Tester le projet (pytest, couverture) et automatiser les tests (CI).
+- Tester le projet (pytest) et mesurer la couverture de code.
 - N'utiliser que des outils libres, et documenter les choix dans le rapport.
 
 ## Fonctionnalités principales
@@ -49,8 +49,7 @@ dans `docs/presentation/`.
 - Interface web : formulaire de demande, résultats des deux modèles,
   historique et vue de détail.
 - Exécution complète via Docker Compose, avec healthchecks.
-- 25 tests automatisés et mesure de couverture, rejoués par une CI GitHub
-  Actions à chaque push.
+- 25 tests automatisés et mesure de couverture (pytest-cov).
 
 ## Technologies utilisées
 
@@ -76,7 +75,7 @@ dans `docs/presentation/`.
 - Make : orchestration du pipeline et des tests.
 - Docker / Docker Compose : conteneurisation des trois services.
 - pytest / pytest-cov : tests et couverture.
-- Git / GitHub Actions : versionnement et intégration continue.
+- Git : versionnement du projet.
 
 ## Architecture du projet
 
@@ -111,7 +110,6 @@ PROGRAMME/
 ├── docs/
 │   ├── Rapport final/  # Rapport PDF + sources LaTeX
 │   └── presentation/   # Support de soutenance
-├── .github/workflows/  # CI (tests.yml)
 ├── Makefile
 ├── Dockerfile          # Reproduction du pipeline ML dans un conteneur
 ├── docker-compose.yml
@@ -229,11 +227,6 @@ Les tests couvrent la validation des entrées, l'encodage des features,
 l'absence de fuite de données dans l'imputation, les seuils de classification
 et les quatre endpoints de l'API (base SQLite en mémoire, aucune dépendance
 externe).
-
-Une CI GitHub Actions (`.github/workflows/tests.yml`) rejoue `make test` puis
-`make coverage` à chaque push et pull request : comme le dataset et les
-scripts sont versionnés, la CI réentraîne les modèles puis lance la suite
-complète.
 
 ## Données et modèles
 
