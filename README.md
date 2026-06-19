@@ -1,5 +1,9 @@
 # Prédiction du risque de crédit bancaire
 
+<p align="center">
+  <img src="docs/Rapport%20final/images/Page_de_presentation_rapport.png" alt="Page de présentation du projet" width="420">
+</p>
+
 ## Présentation du projet
 
 Ce projet met en place une application complète permettant d'estimer le risque
