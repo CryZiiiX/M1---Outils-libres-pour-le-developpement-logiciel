@@ -15,6 +15,7 @@
 \usepackage{geometry}
 \geometry{a4paper, top=2.2cm, bottom=2.4cm, left=2.4cm, right=2.4cm,
           headheight=14pt, headsep=0.5cm}
+\usepackage{pdflscape}   % page paysage dédiée au schéma d'exécution
 \usepackage{setspace}
 \setstretch{1.25}
 
@@ -887,6 +888,17 @@ Le Tableau~\ref{tab:makefile} récapitule les douze cibles du Makefile. La chaî
         \bottomrule
     \end{tabularx}
 \end{table}
+
+La Figure~\ref{fig:execution} synthétise visuellement l'ensemble de la chaîne d'exécution du projet, depuis la préparation de l'environnement jusqu'aux livrables. Elle distingue les commandes manuelles, les scripts, les fichiers manipulés (lus ou générés), les étapes de test et les livrables finaux, et reprend l'ordre d'exécution déduit du Makefile.
+
+\begin{landscape}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,height=0.92\textheight,keepaspectratio]{../schema_execution_scripts_outils_libres.pdf}
+    \caption{Schéma d'exécution des scripts : ordre d'exécution, fichiers manipulés et livrables du projet.}
+    \label{fig:execution}
+\end{figure}
+\end{landscape}
 
 \section{Tableau des versions}
 

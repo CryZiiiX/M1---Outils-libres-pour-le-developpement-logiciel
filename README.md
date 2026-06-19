@@ -93,6 +93,24 @@ Le projet comporte deux parties reliées par les modèles sérialisés :
    enregistrées dans PostgreSQL. Docker Compose orchestre les trois services
    (base de données, API, front-end).
 
+## Schéma d'exécution
+
+Le schéma ci-dessous résume l'ordre d'exécution du projet (préparation,
+pipeline ML, tests, déploiement et livrables), les scripts utilisés et les
+fichiers manipulés.
+
+<p align="center">
+  <img src="docs/schema_execution_scripts_outils_libres.png" alt="Schéma d'exécution des scripts" width="760">
+</p>
+
+Versions vectorielles disponibles :
+`docs/schema_execution_scripts_outils_libres.svg` et `.pdf`. Pour régénérer les
+trois formats (nécessite [Graphviz](https://graphviz.org/), `sudo apt install graphviz`) :
+
+```bash
+python3 scripts/generate_execution_schema.py
+```
+
 ## Arborescence du dépôt
 
 ```text
